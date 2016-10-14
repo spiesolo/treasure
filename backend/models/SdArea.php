@@ -5,7 +5,7 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "sd_area".
+ * This is the model class for table "SD_area".
  *
  * @property integer $ID
  * @property string $a_sn
@@ -25,7 +25,7 @@ class SdArea extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'sd_area';
+        return 'SD_area';
     }
 
     /**
@@ -70,7 +70,7 @@ class SdArea extends \yii\db\ActiveRecord
      */
     public function getLEmployees()
     {
-        return $this->hasMany(SdEmployee::className(), ['ID' => 'l_employee_ID'])->viaTable('sd_link_area_employee', ['l_area_ID' => 'ID']);
+        return $this->hasMany(SdEmployee::className(), ['ID' => 'l_employee_ID'])->viaTable('SD_link_area_employee', ['l_area_ID' => 'ID']);
     }
 
     /**

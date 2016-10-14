@@ -5,7 +5,7 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "sd_department".
+ * This is the model class for table "SD_department".
  *
  * @property integer $ID
  * @property string $d_sn
@@ -24,7 +24,7 @@ class SdDepartment extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'sd_department';
+        return 'SD_department';
     }
 
     /**

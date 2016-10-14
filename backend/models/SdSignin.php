@@ -5,7 +5,7 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "sd_signin".
+ * This is the model class for table "SD_signin".
  *
  * @property integer $ID
  * @property string $s_owner_pin
@@ -26,7 +26,7 @@ class SdSignin extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'sd_signin';
+        return 'SD_signin';
     }
 
     /**

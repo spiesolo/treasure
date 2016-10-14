@@ -5,7 +5,7 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "sd_fingerprint".
+ * This is the model class for table "SD_fingerprint".
  *
  * @property integer $ID
  * @property string $fp_owner_pin
@@ -23,7 +23,7 @@ class SdFingerprint extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'sd_fingerprint';
+        return 'SD_fingerprint';
     }
 
     /**

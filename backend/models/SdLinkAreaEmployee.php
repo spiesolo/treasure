@@ -5,7 +5,7 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "sd_link_area_employee".
+ * This is the model class for table "SD_link_area_employee".
  *
  * @property integer $ID
  * @property integer $l_area_ID
@@ -22,7 +22,7 @@ class SdLinkAreaEmployee extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'sd_link_area_employee';
+        return 'SD_link_area_employee';
     }
 
     /**

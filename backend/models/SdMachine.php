@@ -5,7 +5,7 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "sd_machine".
+ * This is the model class for table "SD_machine".
  *
  * @property integer $ID
  * @property string $m_sn
@@ -48,7 +48,7 @@ class SdMachine extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'sd_machine';
+        return 'SD_machine';
     }
 
     /**
@@ -57,7 +57,7 @@ class SdMachine extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['m_sn', 'm_firmware', 'm_usercount', 'm_tmpcount', 'm_signcount', 'm_ipaddress', 'm_fpversion', 'm_faceversion', 'm_needfaceamount', 'm_facecount', 'm_functionflag', 'm_stamp', 'm_opstamp', 'm_errordelay', 'm_delay', 'm_transtimes', 'm_transinterval', 'm_transflag', 'm_realtimetrans', 'm_encrypt'], 'required'],
+            [['m_sn'], 'required'],
             [['m_usercount', 'm_tmpcount', 'm_signcount', 'm_needfaceamount', 'm_facecount', 'm_errordelay', 'm_delay', 'm_area_ID', 'm_status'], 'integer'],
             [['m_newtime'], 'safe'],
             [['m_sn', 'm_transtimes', 'm_transinterval', 'm_transflag', 'm_style', 'm_name', 'm_address', 'm_pushcommkey'], 'string', 'max' => 255],

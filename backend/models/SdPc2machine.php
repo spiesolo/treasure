@@ -5,7 +5,7 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "sd_pc2machine".
+ * This is the model class for table "SD_pc2machine".
  *
  * @property integer $ID
  * @property string $p_machinesn
@@ -25,7 +25,7 @@ class SdPc2machine extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'sd_pc2machine';
+        return 'SD_pc2machine';
     }
 
     /**
@@ -34,7 +34,7 @@ class SdPc2machine extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['p_machinesn', 'p_orderid', 'p_ordercontent', 'p_ordertime', 'p_sendouttime', 'p_responsetime', 'p_responsevalue', 'p_execflag'], 'required'],
+            [['p_machinesn', 'p_orderid', 'p_ordercontent'], 'required'],
             [['p_orderid', 'p_status'], 'integer'],
             [['p_ordertime', 'p_sendouttime', 'p_responsetime'], 'safe'],
             [['p_machinesn'], 'string', 'max' => 64],

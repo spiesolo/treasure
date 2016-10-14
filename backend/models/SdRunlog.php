@@ -5,7 +5,7 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "sd_runlog".
+ * This is the model class for table "SD_runlog".
  *
  * @property integer $ID
  * @property integer $r_type
@@ -22,7 +22,7 @@ class SdRunlog extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'sd_runlog';
+        return 'SD_runlog';
     }
 
     /**

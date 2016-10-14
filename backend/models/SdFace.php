@@ -5,7 +5,7 @@ namespace app\models;
 use Yii;
 
 /**
- * This is the model class for table "sd_face".
+ * This is the model class for table "SD_face".
  *
  * @property integer $ID
  * @property string $fa_owner_pin
@@ -23,7 +23,7 @@ class SdFace extends \yii\db\ActiveRecord
      */
     public static function tableName()
     {
-        return 'sd_face';
+        return 'SD_face';
     }
 
     /**
