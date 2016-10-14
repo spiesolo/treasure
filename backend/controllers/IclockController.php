@@ -9,8 +9,11 @@ use yii\base\Action;
 use yii\base\Exception;
 use yii\base\UserException;
 use yii\web\HttpException;
+use yii\web\NotFoundHttpException;
+use yii\web\ForbiddenHttpException;
 use yii\web\Response;
-use common\models\LoginForm;
+
+use app\models\SdMachine;
 
 /*
  * Iclock controller
@@ -47,6 +50,18 @@ class IclockController extends Controller
             ],
         ];
         */
+    }
+
+    /**
+     * @inheritdoc
+     *
+     * override
+     *   Disable csrf verfication in device POST, as device doesn't
+     *   support Set-Cookies method at all..
+     */
+    public function beforeAction($action)
+    {
+        return true;
     }
 
     public function actionIndex()
@@ -89,64 +104,83 @@ class IclockController extends Controller
 
     public function actionCdata()
     {
-        $request = Yii::$app->request;
+        $this->clientBeforeRequest();
 
-        $sn = $request->get('SN', null);
-        if (!$sn)
-            return $this->actionError();
-
-        if ($request->isGet) {
-            return $this->clientDeviceInitialize();
-        } else if ($request->isPost) {
+        if (Yii::$app->request->isGet) {
+            return $this->clientInitialize();
+        } else if (Yii::$app->request->isPost) {
             return $this->actionResponse('OK');
         }
-        return $this->actionError();
+
+        $this->clientAfterRequest();
     }
 
     public function actionGetrequest()
     {
-        $request = Yii::$app->request;
+        $this->clientBeforeRequest();
 
-        $sn = $request->get('SN', null);
-        if (!$sn)
-            return $this->actionError();
-
-        if ($request->isGet) {
-            return $this->clientGetrequest();
+        $model = SdMachine::find()->where(['m_sn' => Yii::$app->request->get('SN', '0')])->one();
+        if ($model) {
+            if ($request->isGet) {
+                return $this->clientGetrequest();
+            }
         }
-        return $this->actionError();
+
+        $this->clientAfterRequest();
     }
 
     public function actionDevicecmd()
     {
-        $request = Yii::$app->request;
+        $this->clientBeforeRequest();
 
-        $sn = $request->get('SN', null);
-        if (!$sn)
-            return $this->actionError();
-
-        if ($request->isGet) {
-            return $this->clientDevicecmd();
+        $model = SdMachine::find()->where(['m_sn' => Yii::$app->request->get('SN', '0')])->one();
+        if ($model) {
+            if ($request->isGet) {
+                return $this->clientDevicecmd();
+            }
         }
-        return $this->actionError();
+
+        $this->clientAfterRequest();
     }
 
-    private function clientDeviceInitialize()
+    private function clientInitialize()
     {
         $request = Yii::$app->request;
 
-        $sn = $request->get('SN', null);
+        $sn = $request->get('SN', '0');
         $options = $request->get('options', null);
-        $pushver = $request->get('pushver', null);
-        $language = $request->get('language', null);
 
-        $response  = "GET OPTION FROM:". $sn . "\n";
-        $response .= "ATTLOGStamp=None\n";
-        $response .= "OPERLOGStamp=9999\n";
+        // Parameter checking: options - required
+        if ($options != 'all')
+            $this->requestForbidden();
+
+        $model = SdMachine::find()->where(['m_sn' => $sn])->one();
+        if (!$model) {
+            $options = $request->get('options', null);
+            $pushver = $request->get('pushver', null);
+            $language = $request->get('language', null);
+            $pushcommkey = $request->get('pushcommkey', null);
+
+            $model = new SdMachine();
+            $model->m_sn = $sn;
+            $model->m_pushver = $pushver;
+            $model->m_language = $language;
+            $model->m_pushcommkey = $pushcommkey;
+            $model->m_stamp = '0';
+            $model->m_opstamp = '0';
+            $model->m_errordelay = 30;
+            $model->m_delay = 10;
+            $model->m_transflag = '1111111111';
+            $model->save();
+        }
+
+        $response  = "GET OPTION FROM:". $model->m_sn . "\n";
+        $response .= "ATTLOGStamp=" . $model->m_stamp . "\n";
+        $response .= "OPERLOGStamp=" . $model->m_opstamp . "\n";
         $response .= "ATTPHOTOStamp=None\n";
-        $response .= "ErrorDelay=30\n";
-        $response .= "Delay=10\n";
-        $response .= "TransFlags=1111111111\n";
+        $response .= "ErrorDelay=". $model->m_errordelay . "\n";
+        $response .= "Delay=" . $model->m_delay . "\n";
+        $response .= "TransFlags=" . $model->m_transflag . "\n";
         $response .= "TimeZone=8\n";
         $response .= "Realtime=1\n";
         $response .= "Encrypt=None\n";
@@ -162,6 +196,27 @@ class IclockController extends Controller
     private function clientDevicecmd()
     {
         return $this->actionResponse('OK');
+    }
+
+    private function clientBeforeRequest()
+    {
+        if (!Yii::$app->request->get('SN', null))
+            $this->requestForbidden();
+    }
+
+    private function clientAfterRequest()
+    {
+        $this->requestNotfound();
+    }
+
+    private function requestForbidden()
+    {
+        throw new ForbiddenHttpException('You are not allowed to access this page.');
+    }
+
+    private function requestNotfound()
+    {
+        throw new NotFoundHttpException('The requested page not found.');
     }
 
     private function actionResponse($response)
