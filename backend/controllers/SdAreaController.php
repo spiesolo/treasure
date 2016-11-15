@@ -181,7 +181,7 @@ class SdAreaController extends Controller
         if (($model = SdArea::findOne($id)) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException(Yii::t('app', '请求的页面不存在.');
+            throw new NotFoundHttpException(Yii::t('app', '请求的页面不存在.'));
         }
     }
 }
