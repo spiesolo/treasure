@@ -7,6 +7,14 @@ $config = [
             'cookieValidationKey' => '',
         ],
     ],
+    'modules' => [
+        'gridview' => [
+            'class' => 'kartik\grid\Module',
+        ],
+        'datecontrol' => [
+            'class' => 'kartik\datecontrol\Module',
+        ],
+    ],
 ];
 
 if (!YII_ENV_TEST) {
