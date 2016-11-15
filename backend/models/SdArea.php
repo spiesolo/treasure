@@ -34,7 +34,7 @@ class SdArea extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['a_sn', 'a_parent_sn', 'a_name'], 'required'],
+            [['a_sn', 'a_name'], 'required'],
             [['a_status'], 'integer'],
             [['a_sn', 'a_parent_sn', 'a_name', 'a_remark'], 'string', 'max' => 255],
             [['a_sn'], 'unique'],
@@ -49,11 +49,11 @@ class SdArea extends \yii\db\ActiveRecord
     {
         return [
             'ID' => Yii::t('app', 'ID'),
-            'a_sn' => Yii::t('app', 'A Sn'),
-            'a_parent_sn' => Yii::t('app', 'A Parent Sn'),
-            'a_name' => Yii::t('app', 'A Name'),
-            'a_remark' => Yii::t('app', 'A Remark'),
-            'a_status' => Yii::t('app', 'A Status'),
+            'a_sn' => Yii::t('app', '区域编号'),
+            'a_parent_sn' => Yii::t('app', '上级区域编号'),
+            'a_name' => Yii::t('app', '区域名称'),
+            'a_remark' => Yii::t('app', '备注'),
+            'a_status' => Yii::t('app', '状态'),
         ];
     }
 

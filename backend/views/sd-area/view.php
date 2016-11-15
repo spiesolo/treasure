@@ -1,40 +1,81 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\DetailView;
+use yii\helpers\Url;
+use yii\helpers\ArrayHelper;
+//use yii\widgets\DetailView;
+use kartik\detail\DetailView;
+use app\models\SdArea;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\SdArea */
 
 $this->title = $model->ID;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Sd Areas'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', '区域管理'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="sd-area-view">
+    <h1></h1>
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <?php
 
-    <p>
-        <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->ID], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->ID], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                'method' => 'post',
+    $attributes = [
+        [
+            'columns' => [
+                [
+                    'attribute' => 'a_sn',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+                [
+                    'attribute' => 'a_parent_sn',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                    'type' => DetailView::INPUT_SELECT2,
+                    'widgetOptions' => [
+                        'data' => ArrayHelper::map(SdArea::find()->asArray()->all(), 'a_parent_sn', 'a_parent_sn'),
+                        'options' => ['placeholder' => Yii::t('app', '-- 选择 --')],
+                        'pluginOptions' => ['allowClear' => true],
+                    ],
+                ],
             ],
-        ]) ?>
-    </p>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'ID',
-            'a_sn',
-            'a_parent_sn',
-            'a_name',
-            'a_remark',
-            'a_status',
         ],
-    ]) ?>
+        [
+            'columns' => [
+                [
+                    'attribute' => 'a_name',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+                [
+                    'attribute' => 'a_remark',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+            ],
+        ],
+    ];
+
+    echo DetailView::widget([
+        'model' => $model,
+        'attributes' => $attributes,
+        'mode' => 'view',
+        'bootstrap' => true,
+        'bordered' => true,
+        'striped' => true,
+        'condensed' => true,
+        'responsive' => true,
+        'hover' => true,
+        'hAlign' => 'right',
+        'vAlign' => 'center',
+        'fadeDelay' => 2,
+        'formOptions' => ['action' => Url::current(['#' => 'delete'])], // action to delete
+        'panel' => [
+            'type' => DetailView::TYPE_INFO,
+            'heading' => Yii::t('app', '区域信息'),
+        ],
+        'deleteOptions' => [ // ajax delete parameters
+            'url' => Url::to(['delete', 'id' => $model->ID]),
+            'params' => ['id' => $model->ID],
+        ],
+    ]);
+
+    ?>
 
 </div>

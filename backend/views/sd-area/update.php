@@ -8,16 +8,12 @@ use yii\helpers\Html;
 $this->title = Yii::t('app', 'Update {modelClass}: ', [
     'modelClass' => 'Sd Area',
 ]) . $model->ID;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Sd Areas'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', '区域管理'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = ['label' => $model->ID, 'url' => ['view', 'id' => $model->ID]];
-$this->params['breadcrumbs'][] = Yii::t('app', 'Update');
+$this->params['breadcrumbs'][] = Yii::t('app', '更新');
 ?>
 <div class="sd-area-update">
+    <h1></h1>
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <?= $this->render('_form', [
-        'model' => $model,
-    ]) ?>
-
+    <?= $this->render('_form', ['model' => $model]) ?>
 </div>

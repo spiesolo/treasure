@@ -7,6 +7,8 @@ use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\helpers\Json;
+use yii\helpers\Url;
 
 use app\models\SdArea;
 use app\models\SdAreaSearch;
@@ -26,7 +28,7 @@ class SdAreaController extends Controller
                 'class' => AccessControl::className(),
                 'rules' => [
                     [
-                        'actions' => ['view', 'index', 'create', 'delete'],
+                        'actions' => ['view', 'index', 'create', 'delete', 'update'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -47,6 +49,32 @@ class SdAreaController extends Controller
      */
     public function actionIndex()
     {
+        if (Yii::$app->request->isAjax) {
+            $model = $this->findModel(Yii::$app->request->post('editableKey'));
+
+            if ($model != null) {
+                $post = [];
+                $posted = current($_POST['SdArea']);
+                $post['SdArea'] = $posted;
+                if ($model->load($post)) {
+                    $model->save();
+                    return Json::encode([
+                                'success' => true,
+                                'messages' => [
+                                    'kv-detail-info' => Yii::t('app', '删除成功'),
+                                ],
+                            ]);
+                }
+            }
+
+            return Json::encode([
+                                'success' => false,
+                                'messages' => [
+                                    'kv-detail-error' => Yii::t('app', '无法完成操作'),
+                                ],
+                            ]);
+        }
+
         $searchModel = new SdAreaSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -63,9 +91,14 @@ class SdAreaController extends Controller
      */
     public function actionView($id)
     {
-        return $this->render('view', [
-            'model' => $this->findModel($id),
-        ]);
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('kv-detail-success', Yii::t('app', '保存成功'));
+            return $this->redirect(['view', 'id'=>$id]);
+        }
+
+        return $this->render('view', ['model' => $model]);
     }
 
     /**
@@ -78,11 +111,9 @@ class SdAreaController extends Controller
         $model = new SdArea();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->ID]);
+            return $this->redirect(['index']);
         } else {
-            return $this->render('create', [
-                'model' => $model,
-            ]);
+            return $this->render('create', ['model' => $model]);
         }
     }
 
@@ -97,11 +128,9 @@ class SdAreaController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->ID]);
+            return $this->redirect(['index']);
         } else {
-            return $this->render('update', [
-                'model' => $model,
-            ]);
+            return $this->render('update', ['model' => $model]);
         }
     }
 
@@ -113,6 +142,28 @@ class SdAreaController extends Controller
      */
     public function actionDelete($id)
     {
+        if (Yii::$app->request->isAjax) {
+            if ($this->findModel($id)->delete()) {
+                return Json::encode([
+                            'success' => true,
+                            'messages' => [
+                                'kv-detail-info' => Yii::t('app', '删除成功') . '# ' . $id .
+                                '<a href="'. Url::to(['sd-area/index']) .
+                                '" class="btn btn-sm btn-info">' . ' ' .
+                                '<i class="glyphicon glyphicon-hand-right"></i>' .
+                                Yii::t('app', '点击继续') . '</a>',
+                            ],
+                        ]);
+            } else {
+                return Json::encode([
+                            'success' => false,
+                            'messages' => [
+                                'kv-detail-error' => Yii::t('app', '无法删除') . '# ' . $id . '.',
+                            ]
+                        ]);
+            }
+        }
+
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
@@ -130,7 +181,7 @@ class SdAreaController extends Controller
         if (($model = SdArea::findOne($id)) !== null) {
             return $model;
         } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+            throw new NotFoundHttpException(Yii::t('app', '请求的页面不存在.');
         }
     }
 }
