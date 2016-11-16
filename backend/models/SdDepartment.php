@@ -33,7 +33,7 @@ class SdDepartment extends \yii\db\ActiveRecord
     public function rules()
     {
         return [
-            [['d_sn', 'd_parent_sn', 'd_name'], 'required'],
+            [['d_sn', 'd_name'], 'required'],
             [['d_status'], 'integer'],
             [['d_sn', 'd_parent_sn', 'd_name', 'd_label', 'd_duty', 'd_remark'], 'string', 'max' => 255],
             [['d_admin'], 'string', 'max' => 64],
@@ -49,14 +49,14 @@ class SdDepartment extends \yii\db\ActiveRecord
     {
         return [
             'ID' => Yii::t('app', 'ID'),
-            'd_sn' => Yii::t('app', 'D Sn'),
-            'd_parent_sn' => Yii::t('app', 'D Parent Sn'),
-            'd_name' => Yii::t('app', 'D Name'),
-            'd_label' => Yii::t('app', 'D Label'),
-            'd_admin' => Yii::t('app', 'D Admin'),
-            'd_duty' => Yii::t('app', 'D Duty'),
-            'd_remark' => Yii::t('app', 'D Remark'),
-            'd_status' => Yii::t('app', 'D Status'),
+            'd_sn' => Yii::t('app', '部门编号'),
+            'd_parent_sn' => Yii::t('app', '上级部门编号'),
+            'd_name' => Yii::t('app', '部门名称'),
+            'd_label' => Yii::t('app', '部门标签'),
+            'd_admin' => Yii::t('app', '部门负责人'),
+            'd_duty' => Yii::t('app', '部门职责'),
+            'd_remark' => Yii::t('app', '备注'),
+            'd_status' => Yii::t('app', '状态'),
         ];
     }
 
