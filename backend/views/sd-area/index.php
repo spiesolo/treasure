@@ -3,9 +3,8 @@
 use yii\helpers\Html;
 use yii\helpers\Url;
 use yii\helpers\ArrayHelper;
-#use yii\grid\GridView;
-use kartik\grid\GridView;
 use yii\widgets\Pjax;
+use kartik\grid\GridView;
 use app\models\SdArea;
 
 /* @var $this yii\web\View */
@@ -157,7 +156,6 @@ $this->title = Yii::t('app', '门禁区域管理');
         'responsive'=> false,
         'hover'=> true,
         'persistResize'=> false,
-        'exportConfig'=> true,
         'panel'=>[
             'type'=> GridView::TYPE_PRIMARY,
             'heading'=> '门禁区域管理',
@@ -181,7 +179,8 @@ $this->title = Yii::t('app', '门禁区域管理');
         ],
         // set export properties
         'export' => [
-            'fontAwesome'=>true
+            'fontAwesome' => true,
+            'target' => '_blank', // open in new tag
         ],
     ]);
 

@@ -58,21 +58,13 @@ class SdAreaController extends Controller
                 $post['SdArea'] = $posted;
                 if ($model->load($post)) {
                     $model->save();
-                    return Json::encode([
-                                'success' => true,
-                                'messages' => [
-                                    'kv-detail-info' => Yii::t('app', '删除成功'),
-                                ],
-                            ]);
+                    // no message payload can be provided, as this would be regarded
+                    // as an error in GridView PJax
+                    return Json::encode(['success' => true]);
                 }
             }
 
-            return Json::encode([
-                                'success' => false,
-                                'messages' => [
-                                    'kv-detail-error' => Yii::t('app', '无法完成操作'),
-                                ],
-                            ]);
+            return Json::encode(['success' => false, 'message' => Yii::t('app', '无法完成操作')]);
         }
 
         $searchModel = new SdAreaSearch();
