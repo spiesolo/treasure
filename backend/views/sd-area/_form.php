@@ -24,7 +24,7 @@ use app\models\SdArea;
                                         'title' => Yii::t('app', '保存'),
                                         'class' => 'btn btn-warning btn-flat',
                                     ]) ?>
-                <?//= Html::resetButton('<i class="glyphicon glyphicon-edit"></i>' . Yii::t('app', '重置'), ['class' => 'btn btn-danger btn-flat']) ?>
+                <?= Html::resetButton('<i class="glyphicon glyphicon-edit"></i>' . Yii::t('app', '重置'), ['class' => 'btn btn-danger btn-flat']) ?>
                 <?= Html::button('<i class="glyphicon glyphicon-remove"></i>' . Yii::t('app', '取消'),
                                     [
                                         'type' => 'button',

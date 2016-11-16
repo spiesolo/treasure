@@ -51,16 +51,16 @@ class SdSignin extends \yii\db\ActiveRecord
     {
         return [
             'ID' => Yii::t('app', 'ID'),
-            's_owner_pin' => Yii::t('app', 'S Owner Pin'),
-            's_signtime' => Yii::t('app', 'S Signtime'),
-            's_workstatus' => Yii::t('app', 'S Workstatus'),
-            's_verifytype' => Yii::t('app', 'S Verifytype'),
-            's_workcode' => Yii::t('app', 'S Workcode'),
-            's_machinesn' => Yii::t('app', 'S Machinesn'),
-            's_owner_name' => Yii::t('app', 'S Owner Name'),
-            's_owner_deptno' => Yii::t('app', 'S Owner Deptno'),
-            's_owner_deptname' => Yii::t('app', 'S Owner Deptname'),
-            's_status' => Yii::t('app', 'S Status'),
+            's_owner_pin' => Yii::t('app', '工号'),
+            's_signtime' => Yii::t('app', '签到时间'),
+            's_workstatus' => Yii::t('app', '签到状态'),
+            's_verifytype' => Yii::t('app', '签到类型'),
+            's_workcode' => Yii::t('app', '工作代码'),
+            's_machinesn' => Yii::t('app', '签到机器号'),
+            's_owner_name' => Yii::t('app', '姓名'),
+            's_owner_deptno' => Yii::t('app', '部门编号'),
+            's_owner_deptname' => Yii::t('app', '部门名称'),
+            's_status' => Yii::t('app', '记录状态'),
         ];
     }
 
