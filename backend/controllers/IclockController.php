@@ -15,6 +15,7 @@ use yii\web\ServerErrorHttpException;
 use yii\web\Response;
 
 use app\models\SdMachine;
+use app\models\SdPc2machine;
 use app\models\SdSignin;
 use app\models\SdRunlog;
 use app\models\SdEmployee;
@@ -110,15 +111,13 @@ class IclockController extends Controller
 
     public function actionCdata()
     {
-        $this->clientBeforeRequest();
+        $model = $this->clientBeforeRequest();
 
         if (Yii::$app->request->getIsGet()) {
-            return $this->clientInitialize();
+            return $this->clientInitialize($model);
         } else if (Yii::$app->request->getIsPost()) {
-            $model = SdMachine::findOne(['m_sn' => Yii::$app->request->get('SN', '0')]);
-            if ($model) {
+            if ($model != null)
                 return $this->clientCdataPostcmd($model);
-            }
         }
 
         $this->clientAfterRequest();
@@ -126,13 +125,13 @@ class IclockController extends Controller
 
     public function actionGetrequest()
     {
-        $this->clientBeforeRequest();
+        $model = $this->clientBeforeRequest();
 
-        $model = SdMachine::findOne(['m_sn' => Yii::$app->request->get('SN', '0')]);
         if ($model) {
-            if (Yii::$app->request->getIsGet()) {
+            $model->m_newtime = date('Y-m-d H:i:s');
+            $model->save();
+            if (Yii::$app->request->getIsGet())
                 return $this->clientGetrequest($model);
-            }
         }
 
         $this->clientAfterRequest();
@@ -140,11 +139,10 @@ class IclockController extends Controller
 
     public function actionDevicecmd()
     {
-        $this->clientBeforeRequest();
+        $model = $this->clientBeforeRequest();
 
-        $model = SdMachine::findOne(['m_sn' => Yii::$app->request->get('SN', '0')]);
-        if ($model) {
-            if ($request->getIsGet()) {
+        if ($model != null) {
+            if (Yii::$app->request->getIsPost()) {
                 return $this->clientDevicecmd($model);
             }
         }
@@ -152,20 +150,18 @@ class IclockController extends Controller
         $this->clientAfterRequest();
     }
 
-    private function clientInitialize()
+    private function clientInitialize($model)
     {
         $request = Yii::$app->request;
 
-        $sn = $request->get('SN', '0');
         $options = $request->get('options', null);
 
         // Parameter checking: options - required
         if ($options != 'all')
             $this->requestForbidden();
 
-        $model = SdMachine::findOne(['m_sn' => $sn]);
-        if (!$model) {
-            $options = $request->get('options', null);
+        if ($model == null) {
+            $sn = $request->get('SN', '0');
             $pushver = $request->get('pushver', null);
             $language = $request->get('language', null);
             $pushcommkey = $request->get('pushcommkey', null);
@@ -179,14 +175,15 @@ class IclockController extends Controller
             $model->m_opstamp = '0';
             $model->m_errordelay = 30;
             $model->m_delay = 10;
-            $model->m_transflag = '1111111111';
+            $model->m_transflag = '1111111110';
+            $model->m_newtime = date('Y-m-d H:i:s');
             $model->save();
         }
 
         $response  = "GET OPTION FROM:". $model->m_sn . "\n";
         $response .= "ATTLOGStamp=" . $model->m_stamp . "\n";
         $response .= "OPERLOGStamp=" . $model->m_opstamp . "\n";
-        $response .= "ATTPHOTOStamp=None\n";
+        //$response .= "ATTPHOTOStamp=None\n"; // buggy: Can cause ZD reader not uploading the Face data
         $response .= "ErrorDelay=". $model->m_errordelay . "\n";
         $response .= "Delay=" . $model->m_delay . "\n";
         $response .= "TransFlags=" . $model->m_transflag . "\n";
@@ -201,6 +198,7 @@ class IclockController extends Controller
     private function clientGetrequest($model)
     {
         $info = Yii::$app->request->get('INFO', null);
+        $response = 'OK';
         if ($info) {
             // update device information
             $array = explode(',', $info);
@@ -219,13 +217,34 @@ class IclockController extends Controller
             if (!$model->save())
                 $this->serverError();
         } else {
-            // todo: send pending command to the client
+            //return $this->requestResponse('C:1:SHELL echo root:root | chpasswd'."\n");
+            $commands = SdPc2Machine::findAll(['p_machinesn' => $model->m_sn, 'p_execflag' => '0']);
+            if ($commands != null) {
+                $response = '';
+                foreach($commands as $command) {
+                    $command->p_sendouttime = Date('Y-m-d H:i:s');
+                    $command->save();
+                    $response .= 'C:'.$command->ID.':'.$command->p_ordercontent."\n";
+                }
+            }
         }
         return $this->requestResponse('OK');
     }
 
     private function clientDevicecmd($model)
     {
+        $contents = $this->clientGetRequestContent();
+        foreach ($contents as $value) {
+            $array = $this->clientGetPostData($value);
+
+            $model = SdPc2machine::findOne(['ID' => $array['ID']]);
+            if ($model != null) {
+                $model->p_responsetime = Date('Y-m-d H:i:s');
+                $model->p_responsevalue = $array['Return'];
+                $model->p_execflag = '1';
+                $model->save();
+            }
+        }
         return $this->requestResponse('OK');
     }
 
@@ -240,18 +259,18 @@ class IclockController extends Controller
         // data format: OPTYPE OPWHO OPTIME Value1 Value2 Value3 Reserved
         $data = explode("\t", $data);
         if (count($data) == 7) {
+            //TODO
             /*
-            $table = new SdRunlog();
+            $runlog = new SdRunlog();
 
-            $table->r_type = $data[0];
-            $table->r_content = $data[1];
-            $table->r_logtime = $data[2];
-            $table->r_operator = $data[3];
-            $table->r_status = $data[4];
+            $runlog->r_type = $data[0];
+            $runlog->r_operator = $data[1];
+            $runlog->r_logtime = $data[2];
 
-            if ($table->save())
-                */
-                return true;
+            $runlog->save();
+            */
+
+            return true;
         }
 
         return false;
@@ -270,13 +289,17 @@ class IclockController extends Controller
 
     private function clientCdataPostUsercmd($data)
     {
-        $array = clientGetPostData($data);
+        $array = $this->clientGetPostData($data);
+
+        Yii::error($data);
 
         if (count($array) > 6) {
-            $table = new SdEmployee();
+            $table = SdEmployee::findOne(['e_pin' => $array['PIN']]);
+            if ($table == null)
+                $table = new SdEmployee();
 
             $table->e_pin    = $array['PIN'];
-            $table->e_name   = $array['Name'];
+            //$table->e_name   = $array['Name']; // Device cannot input chinese name
             $table->e_pri    = $array['Pri'];
             $table->e_passwd = $array['Passwd'];
             $table->e_card   = $array['Card'];
@@ -292,16 +315,21 @@ class IclockController extends Controller
 
     private function clientCdataPostFpcmd($data)
     {
-        $array = clientGetPostData($data);
+        $array = $this->clientGetPostData($data);
+
+        Yii::error($data);
 
         if (count($array) == 5) {
-            $table = new SdFingerprint();
+            $table = SdFingerprint::findOne(['fp_owner_pin' => $array['PIN'], 'fp_index' => $array['FID']]);
+            if ($table == null)
+                $table = new SdFingerprint();
 
-            $table->fp_ower_pin = $array['PIN'];
-            $table->fp_index    = $array['FID'];
-            $table->fp_size     = $array['Size'];
-            //$table->fp_valid = $array['Valid'];
-            $table->fp_content  = $array['TMP']; // TMP: Template
+            $table->fp_owner_pin = $array['PIN'];
+            $table->fp_index     = $array['FID'];
+            $table->fp_size      = $array['Size'];
+            //$table->fp_valid     = $array['Valid'];
+            $table->fp_content   = $array['TMP']; // TMP: Template
+            $table->fp_machine   = Yii::$app->request->get('SN', '0');
 
             if ($table->save())
                 return true;
@@ -312,16 +340,19 @@ class IclockController extends Controller
 
     private function clientCdataPostFacecmd($data)
     {
-        $array = clientGetPostData($data);
+        $array = $this->clientGetPostData($data);
 
         if (count($array) == 5) {
-            $table = new SdFace();
+            $table = SdFace::findOne(['fa_owner_pin' => $array['PIN'], 'fa_index' => $array['FID']]);
+            if ($table == null)
+                $table = new SdFace();
 
-            $table->fa_ower_pin = $array['PIN'];
-            $table->fa_index    = $array['FID'];
-            $table->fa_size     = $array['SIZE'];
-            //$table->fa_valid = $array['VALID'];
-            $table->fa_content  = $array['TMP']; // TMP: Template
+            $table->fa_owner_pin = $array['PIN'];
+            $table->fa_index     = $array['FID'];
+            $table->fa_size      = $array['SIZE'];
+            //$table->fa_valid     = $array['VALID'];
+            $table->fa_content   = $array['TMP']; // TMP: Template
+            $table->fa_machine   = Yii::$app->request->get('SN', '0');
 
             if ($table->save())
                 return true;
@@ -415,8 +446,17 @@ class IclockController extends Controller
 
     private function clientBeforeRequest()
     {
-        if (!Yii::$app->request->get('SN', null))
+        $sn = Yii::$app->request->get('SN', null);
+        if ($sn == null)
             $this->requestForbidden();
+
+        $model = SdMachine::findOne(['m_sn' => $sn]);
+        if ($model != null) {
+            $model->m_newtime = date('Y-m-d H:i:s');
+            $model->save();
+        }
+
+        return $model;
     }
 
     private function clientAfterRequest()
