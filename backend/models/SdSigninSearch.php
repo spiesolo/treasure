@@ -60,8 +60,8 @@ class SdSigninSearch extends SdSignin
         // grid filtering conditions
         $query->andFilterWhere([
             'ID' => $this->ID,
-            's_signtime' => $this->s_signtime,
             's_workstatus' => $this->s_workstatus,
+            'DATE_FORMAT(s_signtime, "%Y-%m-%d")' => $this->s_signtime,
             's_verifytype' => $this->s_verifytype,
             's_workcode' => $this->s_workcode,
             's_status' => $this->s_status,

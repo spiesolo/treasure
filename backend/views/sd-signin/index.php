@@ -7,6 +7,8 @@ use yii\helpers\ArrayHelper;
 use kartik\grid\GridView;
 use yii\widgets\Pjax;
 use app\models\SdSignin;
+use app\models\SdDepartment;
+use app\models\SdEmployee;
 
 
 /* @var $this yii\web\View */
@@ -38,7 +40,7 @@ $this->title = Yii::t('app', '签到记录管理');
                     ['title'=>'View author detail', 'onclick'=>'alert("This will open the author page.\n\nDisabled for this demo!")']);
             },
             'filterType'=>GridView::FILTER_SELECT2,
-            'filter'=>ArrayHelper::map(SdSignin::find()->asArray()->all(), 's_owner_pin', 's_owner_pin'),
+            'filter'=>ArrayHelper::map(SdEmployee::find()->asArray()->all(), 'e_owner_pin', 'e_owner_pin'),
             'filterWidgetOptions'=>[
                 'pluginOptions'=>['allowClear'=>true],
             ],
@@ -47,20 +49,14 @@ $this->title = Yii::t('app', '签到记录管理');
         ],
         [
             'attribute'=>'s_signtime',
+            'hAlign'=>'center',
             'vAlign'=>'middle',
-            'width'=>'36px',
-            'value'=>function ($model, $key, $index, $widget) {
-                return Html::a($model->s_signtime,
-                    '#',
-                    ['title'=>'View author detail', 'onclick'=>'alert("This will open the author page.\n\nDisabled for this demo!")']);
-            },
-            'filterType'=>GridView::FILTER_SELECT2,
-            'filter'=>ArrayHelper::map(SdSignin::find()->asArray()->all(), 's_signtime', 's_signtime'),
+            'width'=>'12%',
+            'format'=>'raw',
+            'filterType'=>GridView::FILTER_DATE,
             'filterWidgetOptions'=>[
-                'pluginOptions'=>['allowClear'=>true],
+                'pluginOptions'=>['format' => 'yyyy-mm-dd', 'autoClose'=>true],
             ],
-            'filterInputOptions'=>['placeholder'=>Yii::t('app', '时间查询')],
-            'format'=>'raw'
         ],
         [
             'attribute'=>'s_owner_name',
@@ -72,7 +68,7 @@ $this->title = Yii::t('app', '签到记录管理');
                     ['title'=>'View author detail', 'onclick'=>'alert("This will open the author page.\n\nDisabled for this demo!")']);
             },
             'filterType'=>GridView::FILTER_SELECT2,
-            'filter'=>ArrayHelper::map(SdSignin::find()->asArray()->all(), 's_owner_name', 's_owner_name'),
+            'filter'=>ArrayHelper::map(SdEmployee::find()->asArray()->all(), 'e_owern_name', 'e_owner_name'),
             'filterWidgetOptions'=>[
                 'pluginOptions'=>['allowClear'=>true],
             ],
@@ -89,7 +85,7 @@ $this->title = Yii::t('app', '签到记录管理');
                     ['title'=>'View author detail', 'onclick'=>'alert("This will open the author page.\n\nDisabled for this demo!")']);
             },
             'filterType'=>GridView::FILTER_SELECT2,
-            'filter'=>ArrayHelper::map(SdSignin::find()->asArray()->all(), 's_owner_deptname', 's_owner_deptname'),
+            'filter'=>ArrayHelper::map(SdDepartment::find()->asArray()->all(), 'd_name', 'd_name'),
             'filterWidgetOptions'=>[
                 'pluginOptions'=>['allowClear'=>true],
             ],
