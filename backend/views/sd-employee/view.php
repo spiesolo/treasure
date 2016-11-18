@@ -1,7 +1,12 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\DetailView;
+use yii\helpers\Url;
+use yii\helpers\ArrayHelper;
+use kartik\detail\DetailView;
+use app\models\SdEmployee;
+use app\models\SdDepartment;
+use app\models\SdArea;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\SdEmployee */
@@ -12,46 +17,182 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="sd-employee-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->ID], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->ID], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                'method' => 'post',
+    <?php
+
+    $attributes = [
+        [
+            'columns' => [
+                [
+                    'attribute' => 'e_pin',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+                [
+                    'attribute' => 'e_name',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
             ],
-        ]) ?>
-    </p>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'ID',
-            'e_pin',
-            'e_name',
-            'e_sex',
-            'e_age',
-            'e_idcard',
-            'e_mobile',
-            'e_dept_no',
-            'e_duty',
-            'e_class',
-            'e_title',
-            'e_pri',
-            'e_grp',
-            'e_tz',
-            'e_fingerprint',
-            'e_face',
-            'e_card',
-            'e_passwd',
-            'e_photo',
-            'e_checkin_dt',
-            'e_resign_dt',
-            'e_black_flag',
-            'e_status',
         ],
-    ]) ?>
+        [
+            'columns' => [
+                [
+                    'attribute' => 'e_sex',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                    'type' => DetailView::INPUT_SELECT2,
+                    'widgetOptions' => [
+                        'data' => [],
+                        'options' => ['placeholder' => Yii::t('app', '-- 选择 --')],
+                        'pluginOptions' => ['allowClear' => true],
+                    ],
+                ],
+                [
+                    'attribute' => 'e_age',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+            ],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'e_idcard',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+                [
+                    'attribute' => 'e_mobile',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+            ],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'e_dept_no',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                    'type' => DetailView::INPUT_SELECT2,
+                    'widgetOptions' => [
+                        'data' => ArrayHelper::map(SdDepartment::find()->asArray()->all(), 'd_sn', 'd_name'),
+                        'options' => ['placeholder' => Yii::t('app', '-- 选择 --')],
+                        'pluginOptions' => ['allowClear' => true],
+                    ],
+                ],
+                [
+                    'attribute' => 'e_duty',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+            ],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'e_class',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+                [
+                    'attribute' => 'e_title',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+            ],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'e_pri',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+                [
+                    'attribute' => 'e_grp',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+            ],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'e_tz',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+                [
+                    'attribute' => 'e_fingerprint',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+            ],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'e_face',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+                [
+                    'attribute' => 'e_card',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+            ],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'e_passwd',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+                [
+                    'attribute' => 'e_photo',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+            ],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'e_checkin_dt',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+                [
+                    'attribute' => 'e_resign_dt',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+            ],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'e_black_flag',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+                [
+                    'attribute' => 'e_status',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+            ],
+        ],
+
+
+    ];
+
+    echo DetailView::widget([
+        'model' => $model,
+        'attributes' => $attributes,
+        'mode' => 'view',
+        'bootstrap' => true,
+        'bordered' => true,
+        'striped' => true,
+        'condensed' => true,
+        'responsive' => true,
+        'hover' => true,
+        'hAlign' => 'right',
+        'vAlign' => 'center',
+        'fadeDelay' => 2,
+        'formOptions' => ['action' => Url::current(['#' => 'delete'])], // action to delete
+        'panel' => [
+            'type' => DetailView::TYPE_INFO,
+            'heading' => Yii::t('app', '员工信息'),
+        ],
+        'deleteOptions' => [ // ajax delete parameters
+            'url' => Url::to(['delete', 'id' => $model->ID]),
+            'params' => ['id' => $model->ID],
+        ],
+    ]);
+
+    ?>
 
 </div>

@@ -2,11 +2,16 @@
 
 namespace backend\controllers;
 
+use app\models\SdDepartment;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
+use yii\helpers\Json;
+use yii\helpers\Url;
+
+
 
 use app\models\SdEmployee;
 use app\models\SdEmployeeSearch;
@@ -47,6 +52,24 @@ class SdEmployeeController extends Controller
      */
     public function actionIndex()
     {
+        if (Yii::$app->request->isAjax) {
+            $model = $this->findModel(Yii::$app->request->post('editableKey'));
+
+            if ($model != null) {
+                $post = [];
+                $posted = current($_POST['SdEmployee']);
+                $post['SdEmployee'] = $posted;
+                if ($model->load($post)) {
+                    $model->save();
+                    // no message payload can be provided, as this would be regarded
+                    // as an error in GridView PJax
+                    return Json::encode(['success' => true]);
+                }
+            }
+
+            return Json::encode(['success' => false, 'message' => Yii::t('app', '无法完成操作')]);
+        }
+
         $searchModel = new SdEmployeeSearch();
         $dataProvider = $searchModel->search(Yii::$app->request->queryParams);
 
@@ -63,6 +86,13 @@ class SdEmployeeController extends Controller
      */
     public function actionView($id)
     {
+        $model = $this->findModel($id);
+
+        if ($model->load(Yii::$app->request->post()) && $model->save()) {
+            Yii::$app->session->setFlash('kv-detail-success', Yii::t('app', '保存成功'));
+            return $this->redirect(['view', 'id'=>$id]);
+        }
+
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -78,7 +108,7 @@ class SdEmployeeController extends Controller
         $model = new SdEmployee();
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->ID]);
+            return $this->redirect(['index']);
         } else {
             return $this->render('create', [
                 'model' => $model,
@@ -97,7 +127,7 @@ class SdEmployeeController extends Controller
         $model = $this->findModel($id);
 
         if ($model->load(Yii::$app->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->ID]);
+            return $this->redirect(['index']);
         } else {
             return $this->render('update', [
                 'model' => $model,
@@ -113,6 +143,28 @@ class SdEmployeeController extends Controller
      */
     public function actionDelete($id)
     {
+        if (Yii::$app->request->isAjax) {
+            if ($this->findModel($id)->delete()) {
+                return Json::encode([
+                    'success' => true,
+                    'messages' => [
+                        'kv-detail-info' => Yii::t('app', '删除成功') . '# ' . $id .
+                            '<a href="'. Url::to(['sd-employee/index']) .
+                            '" class="btn btn-sm btn-info">' . ' ' .
+                            '<i class="glyphicon glyphicon-hand-right"></i>' .
+                            Yii::t('app', '点击继续') . '</a>',
+                    ],
+                ]);
+            } else {
+                return Json::encode([
+                    'success' => false,
+                    'messages' => [
+                        'kv-detail-error' => Yii::t('app', '无法删除') . '# ' . $id . '.',
+                    ]
+                ]);
+            }
+        }
+
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
@@ -128,9 +180,10 @@ class SdEmployeeController extends Controller
     protected function findModel($id)
     {
         if (($model = SdEmployee::findOne($id)) !== null) {
+//        if(($model = SdEmployee::find()->leftJoin(SdDepartment::tableName(), 'SD_department.d_sn = SD_employee.e_dept_no '))){
             return $model;
         } else {
-            throw new NotFoundHttpException('The requested page does not exist.');
+            throw new NotFoundHttpException(Yii::t('app', '请求的页面不存在.'));
         }
     }
 }

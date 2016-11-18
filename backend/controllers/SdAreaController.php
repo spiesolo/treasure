@@ -2,6 +2,7 @@
 
 namespace backend\controllers;
 
+use app\models\SdDepartment;
 use Yii;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
