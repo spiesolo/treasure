@@ -8,7 +8,7 @@
 use kartik\detail\DetailView;
 ?>
 
-<?
+<?php
     $attributes = [
         [
             'group' => true,
