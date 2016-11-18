@@ -1,65 +1,204 @@
 <?php
 
 use yii\helpers\Html;
-use yii\widgets\DetailView;
+use yii\helpers\Url;
+use yii\helpers\ArrayHelper;
+use kartik\detail\DetailView;
+
+use app\models\SdMachine;
+use app\models\SdArea;
 
 /* @var $this yii\web\View */
 /* @var $model app\models\SdMachine */
 
 $this->title = $model->ID;
-$this->params['breadcrumbs'][] = ['label' => Yii::t('app', 'Sd Machines'), 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => Yii::t('app', '设备管理'), 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="sd-machine-view">
+    <h1></h1>
 
-    <h1><?= Html::encode($this->title) ?></h1>
-
-    <p>
-        <?= Html::a(Yii::t('app', 'Update'), ['update', 'id' => $model->ID], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a(Yii::t('app', 'Delete'), ['delete', 'id' => $model->ID], [
-            'class' => 'btn btn-danger',
-            'data' => [
-                'confirm' => Yii::t('app', 'Are you sure you want to delete this item?'),
-                'method' => 'post',
-            ],
-        ]) ?>
-    </p>
-
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'ID',
-            'm_sn',
-            'm_firmware',
-            'm_usercount',
-            'm_tmpcount',
-            'm_signcount',
-            'm_ipaddress',
-            'm_fpversion',
-            'm_faceversion',
-            'm_needfaceamount',
-            'm_facecount',
-            'm_functionflag',
-            'm_stamp',
-            'm_opstamp',
-            'm_errordelay',
-            'm_delay',
-            'm_transtimes',
-            'm_transinterval',
-            'm_transflag',
-            'm_realtimetrans',
-            'm_encrypt',
-            'm_newtime',
-            'm_onlineinfo',
-            'm_style',
-            'm_name',
-            'm_address',
-            'm_pushver',
-            'm_language',
-            'm_pushcommkey',
-            'm_area_ID',
-            'm_status',
+    <?php
+    $attributes = [
+        [
+            'group' => true,
+            'label' => Yii::t('app', '基本信息'),
+            'rowOptions' => ['class' => 'info'],
         ],
-    ]) ?>
+        [
+            'columns' => [
+                [
+                    'attribute' => 'ID',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                    'displayOnly' => true,
+                ],
+                [
+                    'attribute' => 'm_sn',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                    'displayOnly' => true,
+                ],
+            ],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'm_name',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                    'displayOnly' => true,
+                ],
+                [
+                    'attribute' => 'm_ipaddress',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                    'displayOnly' => true,
+                ],
+            ],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'm_newtime',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                    'displayOnly' => true,
+                ],
+                [
+                    'attribute' => 'm_address',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+            ],
+        ],
+        [
+            'group' => true,
+            'label' => Yii::t('app', '固件版本信息'),
+            'rowOptions' => ['class' => 'info'],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'm_firmware',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                    'displayOnly' => true,
+                ],
+                [
+                    'attribute' => 'm_pushver',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                    'displayOnly' => true,
+                ],
+            ],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'm_fpversion',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                    'displayOnly' => true,
+                ],
+                [
+                    'attribute' => 'm_faceversion',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                    'displayOnly' => true,
+                ],
+            ],
+        ],
+        [
+            'group' => true,
+            'label' => Yii::t('app', '登记信息'),
+            'rowOptions' => ['class' => 'info'],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'm_usercount',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                    'displayOnly' => true,
+                ],
+                [
+                    'attribute' => 'm_tmpcount',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                    'displayOnly' => true,
+                ],
+            ],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'm_facecount',
+                    'displayOnly' => true,
+                ],
+            ],
+        ],
+        [
+            'group' => true,
+            'label' => Yii::t('app', '联网配置'),
+            'rowOptions' => ['class' => 'info'],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'm_errordelay',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+                [
+                    'attribute' => 'm_delay',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+            ],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'm_transtimes',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+                [
+                    'attribute' => 'm_transinterval',
+                    'valueColOptions'=>['style'=>'width:30%'],
+                ],
+            ],
+        ],
+        [
+            'group' => true,
+            'label' => Yii::t('app', '区域配置'),
+            'rowOptions' => ['class' => 'info'],
+        ],
+        [
+            'columns' => [
+                [
+                    'attribute' => 'm_area_ID',
+                    'valueColOptions'=>['class'=>'col-md-4 pull-left'],
+                    'type' => DetailView::INPUT_SELECT2,
+                    'widgetOptions' => [
+                        'data' => ArrayHelper::map(SdArea::find()->asArray()->all(), 'ID', 'a_name'),
+                        'options' => ['placeholder' => Yii::t('app', '-- 选择 --')],
+                        'pluginOptions' => ['allowClear' => true],
+                    ],
+                ],
+            ],
+        ],
+    ];
 
+    echo DetailView::widget([
+        'model' => $model,
+        'attributes' => $attributes,
+        'mode' => 'view',
+        'bootstrap' => true,
+        'bordered' => true,
+        'striped' => true,
+        'condensed' => true,
+        'responsive' => true,
+        'hover' => true,
+        'hAlign' => 'right',
+        'vAlign' => 'center',
+        'fadeDelay' => 2,
+        'formOptions' => ['action' => Url::current(['#' => 'delete'])], // action to delete
+        'panel' => [
+            'type' => DetailView::TYPE_PRIMARY,
+            'heading' => Yii::t('app', '设备详细信息'),
+        ],
+        'deleteOptions' => [ // ajax delete parameters
+            'url' => Url::to(['delete', 'id' => $model->ID]),
+            'params' => ['id' => $model->ID],
+        ],
+    ]);
+
+    ?>
 </div>
